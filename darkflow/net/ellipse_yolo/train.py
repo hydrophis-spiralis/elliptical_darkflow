@@ -63,7 +63,7 @@ def loss(self, net_out):
     adjusted_c = expit_tensor(net_out_reshape[:, :, :, :, 4])
     adjusted_c = tf.reshape(adjusted_c, [-1, H*W, B, 1])
 
-    adjusted_prob = tf.nn.softmax(net_out_reshape[:, :, :, :, 5:])
+    adjusted_prob = net_out_reshape[:, :, :, :, 5:]
     adjusted_prob = tf.reshape(adjusted_prob, [-1, H*W, B, C])
 
     adjusted_net_out = tf.concat([adjusted_coords_xy, adjusted_coords_wh, adjusted_c, adjusted_prob], 3)

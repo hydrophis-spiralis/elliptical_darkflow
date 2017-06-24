@@ -11,11 +11,8 @@ def parse(self, exclusive = False):
     meta = self.meta
     ext = '.parsed'
     ann = self.FLAGS.annotation
-    if not os.path.isdir(ann):
-        msg = 'Annotation directory not found {} .'
-        exit('Error: {}'.format(msg.format(ann)))
     print('\n{} parsing {}'.format(meta['model'], ann))
-    dumps = (ann, meta['labels'], exclusive)
+    dumps = ellipse_dataset_tsv(ann, meta['labels'], exclusive)
     return dumps
 
 
@@ -26,13 +23,13 @@ def _batch(self, chunk):
     input & loss layer correspond to this chunk
     """
     meta = self.meta
-    labels = meta['labels']
     
     H, W, _ = meta['out_size']
     C, B = meta['classes'], meta['num']
     anchors = meta['anchors']
 
     # preprocess
+
     jpg = chunk[0]; w, h, allobj_ = chunk[1]
     allobj = deepcopy(allobj_)
     path = os.path.join(self.FLAGS.dataset, jpg)
@@ -64,8 +61,9 @@ def _batch(self, chunk):
     proid = np.zeros([H*W,B,C])
     prear = np.zeros([H*W,4])
     for obj in allobj:
+
         probs[obj[5], :, :] = [[0.]*C] * B
-        probs[obj[5], :, labels.index(obj[0])] = 1.
+        probs[obj[5], :, 0] = obj[5]
         proid[obj[5], :, :] = [[1.]*C] * B
         coord[obj[5], :, :] = [obj[1:5]] * B
         prear[obj[5],0] = obj[1] - obj[3]**2 * .5 * W # xleft

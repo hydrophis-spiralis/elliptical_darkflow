@@ -20,35 +20,43 @@ def ellipse_dataset_tsv(ANN, pick, exclusive=False):
     dumps = list()
     cur_dir = os.getcwd()
     os.chdir(ANN)
-    annotations = os.listdir('.')
-    annotations = str(annotations) + '/dataset.txt'
-    size = len(annotations)
+
+    annotations = ANN + '/dataset.txt'
+
+
 
     with open(annotations, 'r') as f:
-        for i, line in enumerate(f.readlines()):
+        lines =  f.readlines()
+        size = len(lines)
+        for i, line in enumerate(lines):
             # progress bar
             sys.stdout.write('\r')
             percentage = 1. * (i + 1) / size
             progress = int(percentage * 20)
             bar_arg = [progress * '=', ' ' * (19 - progress), percentage * 100]
 
-            sys.stdout.write('[{}>{}]{:.0f}%  {}'.format(*bar_arg))
+            sys.stdout.write('[{}>{}]{:.0f}% '.format(*bar_arg))
             sys.stdout.flush()
 
             # actual parsing
             jpg, xc, yc, a,b,angle = line.split('\t')
-
+            xc = int(xc)
+            yc = int(yc)
+            a = int(a)
+            b = int(b)
+            angle = int(angle)
 
             w = 648
             h = 432
             all = list()
 
-            r =  np.max((a,b))
-            xn = int(xc) - r * np.cos(np.pi / 180 * angle)
-            xx = int(xc) +  r * np.cos(np.pi / 180 * angle)
 
-            yn = int(yc) - r * np.sin(np.pi / 180 * angle)
-            yx = int(yc) +  r * np.sin(np.pi / 180 * angle)
+            r =  np.max((a,b))
+            xn = int(xc - r * np.cos(np.pi / 180 * angle))
+            xx = int(xc +  r * np.cos(np.pi / 180 * angle))
+
+            yn = int(yc - r * np.sin(np.pi / 180 * angle))
+            yx = int(yc +  r * np.sin(np.pi / 180 * angle))
 
             current = [xn, yn, xx, yx, angle]
             all += [current]
